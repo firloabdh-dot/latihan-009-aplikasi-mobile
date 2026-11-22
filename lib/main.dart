@@ -18,13 +18,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Firebase Auth Simple',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: const Scaffold(
-        body: Center(child: Text('Loading App...')),
-      ),
+      home: const AuthWrapper(),
     );
+    
+    
   }
 }
 
@@ -49,9 +50,7 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        return const Scaffold(
-          body: Center(child: Text('Halaman Login')),
-        );
+        return const LoginScreen();
       },
     );
   }
