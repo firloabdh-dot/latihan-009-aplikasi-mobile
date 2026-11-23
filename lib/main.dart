@@ -132,18 +132,57 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final User user;
 
   const ProfilePage({super.key, required this.user});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late User _currentUser;
+  bool _isRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = widget.user;
+  }
+
+  Future<void> _refreshProfile() async {
+    setState(() => _isRefreshing = true);
+    await FirebaseAuth.instance.currentUser?.reload();
+    if (mounted) {
+      setState(() {
+        _currentUser = FirebaseAuth.instance.currentUser ?? _currentUser;
+        _isRefreshing = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final photoUrl = _currentUser.photoURL;
+    final hasPhoto = photoUrl != null && photoUrl.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil Mahasiswa'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: _isRefreshing
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh),
+            tooltip: 'Refresh Profil',
+            onPressed: _isRefreshing ? null : _refreshProfile,
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -157,19 +196,23 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const CircleAvatar(
-              radius: 50,
+            CircleAvatar(
+              radius: 55,
               backgroundColor: Colors.blue,
-              child: Icon(Icons.person, size: 55, color: Colors.white),
+              backgroundImage: hasPhoto ? NetworkImage(photoUrl) : null,
+              onBackgroundImageError: hasPhoto ? (_, __) {} : null,
+              child: !hasPhoto
+                  ? const Icon(Icons.person, size: 55, color: Colors.white)
+                  : null,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Firlo Abdul Fatur',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              _currentUser.displayName ?? 'Nama belum diatur',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
-              user.email ?? 'firloabdh@gmail.com',
+              _currentUser.email ?? '-',
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
@@ -196,7 +239,7 @@ class ProfilePage extends StatelessWidget {
                     leading: const Icon(Icons.verified_user, color: Colors.green),
                     title: const Text('Firebase UID'),
                     subtitle: Text(
-                      user.uid,
+                      _currentUser.uid,
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
