@@ -8,11 +8,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pertemuan_8"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.example.login_firebase"
+    compileSdk = 37 // flutter_local_notifications membutuhkan SDK 37   // <-- DIUBAH
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // Wajib untuk flutter_local_notifications
+        isCoreLibraryDesugaringEnabled = true          // <-- BARU
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -49,4 +51,9 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {                                         // <-- BARU
+    // Wajib untuk flutter_local_notifications 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
