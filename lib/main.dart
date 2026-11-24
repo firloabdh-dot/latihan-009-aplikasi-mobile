@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'notification_service.dart';
+import 'fcm_token_card.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -180,7 +181,7 @@ class UserInfoScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -194,6 +195,7 @@ class UserInfoScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+              
               Card(
                 elevation: 4,
                 child: Padding(
@@ -213,6 +215,7 @@ class UserInfoScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const FcmTokenCard()
             ],
           ),
         ),
